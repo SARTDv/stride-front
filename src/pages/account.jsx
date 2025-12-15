@@ -1,20 +1,29 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { LogOut, Settings, House } from "lucide-react";
 import styles from "../css/account.module.css";
-import { AuthContext } from "../components/AuthToken";
-import api from '../api/axiosInstance';
+import { supabase } from '../api/supabaseClient';
+import { useAtom } from 'jotai';
+import { userAtom, isLoggedInAtom } from '../state/authAtoms';
 
 function AccountPage() {
-  const { handleLogout } = useContext(AuthContext);
+  const [user, setUser] = useAtom(userAtom);
+  const [, setIsLoggedIn] = useAtom(isLoggedInAtom);
   const navigate = useNavigate();
 
   const [userData, setUserData] = useState(null);
   const [isSuperuser, setIsSuperuser] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const logoutAndRedirect = () => {
-    handleLogout();
-    navigate("/home");
+  const logoutAndRedirect = async () => {
+    try {
+      await supabase.auth.signOut();
+      setIsLoggedIn(false);
+      setUser(null);
+      navigate("/home");
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
   };
 
   const handleAdminClick = () => {
@@ -22,28 +31,45 @@ function AccountPage() {
   };
 
   useEffect(() => {
-    // Realizar la solicitud al backend
+    // Obtener datos del usuario de Supabase
     const fetchUserData = async () => {
       try {
-        const response = await api.get("/api/accounts/user-detail/");
-        setUserData(response.data);
-        setIsSuperuser(response.data.is_staff); // Usar is_staff como indicador de superusuario
-        console.log("User data:", response.data);
-        console.log("Is superuser:", response.data.is_staff);
+        if (!user) {
+          navigate("/login");
+          return;
+        }
+
+        // Obtener metadatos del usuario
+        const username = user.user_metadata?.username || user.email.split('@')[0];
+
+        setUserData({
+          username: username,
+          email: user.email,
+          id: user.id,
+        });
+
+        // Aquí puedes verificar si es admin usando una tabla en Supabase o roles
+        // Por ahora, asumiremos que es false
+        setIsSuperuser(false);
+
+        console.log("User data:", { username, email: user.email });
       } catch (error) {
         console.error("Error fetching user data:", error);
-        if (error.response && error.response.status === 401) {
-          handleLogout(); // Desloguear si el token es inválido
-          navigate("/login");
-        }
+        navigate("/login");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchUserData();
-  }, [navigate, handleLogout]);
+  }, [user, navigate]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   if (!userData) {
-    return <div>Loading...</div>;
+    return <div>Error loading user data</div>;
   }
 
   return (

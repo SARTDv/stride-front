@@ -1,17 +1,27 @@
-import React, { useContext} from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Package, Users, BarChart } from 'lucide-react';
 import styles from '../../css/admin.module.css';
 import { LogOut, House } from 'lucide-react';
-import { AuthContext } from '../../components/AuthToken';
+import { useAtom } from 'jotai';
+import { isLoggedInAtom, userAtom } from '../../state/authAtoms';
+import { supabase } from '../../api/supabaseClient';
 
 export function Sidebar({ activeSection, onNavigate, isOpen }) {
 
-  const { isLoggedIn, handleLogout } = useContext(AuthContext);
+  const [isLoggedIn] = useAtom(isLoggedInAtom);
+  const [, setUser] = useAtom(userAtom);
+  const [, setIsLoggedIn] = useAtom(isLoggedInAtom);
   const navigate = useNavigate();
-  const logoutAndRedirect = () => {
-    handleLogout();
-    navigate('/home');
+  const logoutAndRedirect = async () => {
+    try {
+      await supabase.auth.signOut();
+      setIsLoggedIn(false);
+      setUser(null);
+      navigate('/home');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
   return (
     <div className={`${styles.sidebar} ${isOpen ? styles.active : ''}`}>
@@ -42,23 +52,23 @@ export function Sidebar({ activeSection, onNavigate, isOpen }) {
       </nav>
       <div className={styles["options-button"]}>
         <button
-            className={styles["btn-primary"]}
+          className={styles["btn-primary"]}
           onClick={() => {
             window.location.href = "/home";
-        }}
+          }}
         >
-            <House size={20}/>
-            <span>Home</span>
+          <House size={20} />
+          <span>Home</span>
         </button>
         <button
-              onClick={logoutAndRedirect}
-              className={styles["btn-secondary"]}
-            >
-              <LogOut size={20} />
-              <span>Log Out</span>
+          onClick={logoutAndRedirect}
+          className={styles["btn-secondary"]}
+        >
+          <LogOut size={20} />
+          <span>Log Out</span>
         </button>
       </div>
-      
+
     </div>
   );
 }

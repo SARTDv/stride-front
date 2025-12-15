@@ -12,9 +12,11 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.26.0",
+    "@supabase/supabase-js": "^2.87.3",
     "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.7",
+    "jotai": "^2.4.10",
     "jquery": "^3.7.1",
     "lucide-react": "^0.468.0",
     "popper.js": "^1.16.1",

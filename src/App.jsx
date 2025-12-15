@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
@@ -12,31 +12,33 @@ import ProductDetails from './pages/productDetails';
 import StrideLogin from './pages/strideLogin';
 import OrderPage from './pages/orders';
 import EmailVerification from './pages/EmailVerification';
-import { AuthProvider, AuthContext } from './components/AuthToken';
+import AuthListener from './components/AuthToken';
+import { isLoggedInAtom } from './state/authAtoms';
 import Admin from './pages/admin/admin'
 import AccountPage from './pages/account';
 import ProtectedRoute from './components/RutaLogeada'; // Importa el componente de rutas protegidas
 
 
 
-const AppContent = () => {
-    const { isLoggedIn } = useContext(AuthContext); 
+import { useAtom } from 'jotai';
 
+const AppContent = () => {
+    const [isLoggedIn] = useAtom(isLoggedInAtom);
     return (
         <Router>
             <Routes>
                 <Route path="/login" element={<StrideLogin />} />
                 <Route
-                        path="/admin"
-                        element={
-                            <ProtectedRoute>
-                                <Admin />
-                            </ProtectedRoute>
-                        }
-                    />
+                    path="/admin"
+                    element={
+                        <ProtectedRoute>
+                            <Admin />
+                        </ProtectedRoute>
+                    }
+                />
                 <Route path="/" element={<StrideLayout />}>
                     <Route index element={<Navigate to="/home" />} />
-                    <Route path="/home" element={<Home key={isLoggedIn} />} /> 
+                    <Route path="/home" element={<Home key={isLoggedIn} />} />
                     <Route path="/shop" element={<Shop />} />
                     <Route path="/productDetails" element={<ProductDetails />} />
                     <Route path="/verify-email" element={<EmailVerification />} />
@@ -80,9 +82,9 @@ const AppContent = () => {
 };
 
 const App = () => (
-    <AuthProvider>
+    <AuthListener>
         <AppContent />
-    </AuthProvider>
+    </AuthListener>
 );
 
 export default App;
