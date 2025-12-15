@@ -13,7 +13,7 @@ const OrderPage = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await api.get('/api/orders/orders/');
+        const response = await api.get('/orders');
         setOrders(response.data);
       } catch (err) {
         setError(err.response ? err.response.data.detail : 'Failed to fetch orders');
@@ -31,7 +31,7 @@ const OrderPage = () => {
       await api.patch(`/api/orders/orders/${orderId}/`, {
         status: 'completed',
       });
-      
+
       // Actualiza el estado local de la orden
       setOrders(
         orders.map((order) =>
@@ -39,12 +39,12 @@ const OrderPage = () => {
         )
       );
     } catch (err) {
-      const message = err.response ? err.response.data.detail : 'Failed to update order status';      
+      const message = err.response ? err.response.data.detail : 'Failed to update order status';
       toast.error(message, { autoclose: true });
       setError(message);
     }
   };
-  
+
   const handleMarkAsCanceled = async (orderId) => {
     try {
       await api.patch(`/api/orders/orders/${orderId}/`, {
@@ -67,7 +67,7 @@ const OrderPage = () => {
   }
 
   if (error) {
-    toast.error("Error!",{autoclose:true});
+    toast.error("Error!", { autoclose: true });
     return <div style={{ justifyContent: "center", alignItems: "center" }}>Error: {error}</div>;
   }
 
@@ -75,7 +75,7 @@ const OrderPage = () => {
     <div className={styles["orders-container"]}>
       <div className={styles["orders-content"]}>
         <div>
-            <ToastContainer position="top-center" autoClose={3000} hideProgressBar={true} />
+          <ToastContainer position="top-center" autoClose={3000} hideProgressBar={true} />
         </div>
         <div className={styles["orders-header"]}>
           <Package size={32} className={styles["orders-icon"]} />
@@ -154,7 +154,7 @@ const OrderPage = () => {
             </div>
           ))}
         </div>
-      </div>      
+      </div>
     </div>
   );
 };

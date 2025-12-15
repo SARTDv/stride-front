@@ -122,6 +122,7 @@ function Login() {
             toast.success('¡Login exitoso!', { autoClose: true });
             setIsLoggedIn(true);
             setUser(data?.user || null);
+            console.log("Usuario logueado:", data.user);
             navigate("/home");
 
         } catch (error) {
