@@ -2,7 +2,7 @@
 
 ## Descripción del Proyecto
 
-Stride es una plataforma de e-commerce desarrollada con **React** y **Vite** que permite a los usuarios navegar, comprar productos y gestionar sus pedidos. Incluye un panel administrativo para la gestión de productos, análisis de ventas y seguimiento de órdenes. La aplicación se integra con **Supabase** para autenticación y base de datos en tiempo real.
+Stride es una plataforma de e-commerce desarrollada con **React** y **Vite** que permite a los usuarios navegar, comprar productos y gestionar sus pedidos. Incluye un panel administrativo para la gestión de productos, análisis de ventas y seguimiento de órdenes. La aplicación se integra con **Supabase** para autenticación y varios microservicios para cumplir sus funciones .
 
 ### Características principales:
 - 🛒 Catálogo de productos con búsqueda y filtros
