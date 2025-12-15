@@ -226,7 +226,7 @@ const Shop = () => {
                 </div>
 
                 <div className="row">
-                    {products.map((product) => (
+                    {Array.isArray(products) && products.map((product) => (
                     <div className="col-12 col-sm-6 col-md-12 col-xl-6" key={product.id}>
                         <div className="single-product-wrapper" onClick={(e) => { e.stopPropagation(); handleProductClick(product.id);}}>
                         <div className="product-img">
