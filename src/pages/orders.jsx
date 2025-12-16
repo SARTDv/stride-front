@@ -13,7 +13,7 @@ const OrderPage = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await api.get('/orders');
+        const response = await api.get('/example');
         setOrders(response.data);
       } catch (err) {
         setError(err.response ? err.response.data.detail : 'Failed to fetch orders');

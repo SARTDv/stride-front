@@ -12,9 +12,10 @@ const ProductDetails = () => {
 
     if (productId) {
       api
-        .get(`/api/products/details/${productId}/`) // Cambia la URL según tu API
+        .get(`/products/${productId}/`) // Cambia la URL según tu API
         .then((response) => {
-          setProduct(response.data);
+          console.log('Detalles del producto obtenidos:', response.data.datos);
+          setProduct(response.data.datos);
           setLoading(false);
         })
         .catch((error) => {
