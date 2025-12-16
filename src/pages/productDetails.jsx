@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { supabase } from '../api/supabaseClient'
 import { toast, ToastContainer } from 'react-toastify';
 import api from '../api/axiosInstance';
 
@@ -28,19 +28,19 @@ const ProductDetails = () => {
   }, []);
 
   const handleAddToCart = async () => {
-    const token = localStorage.getItem('token');
+    const { data } = await supabase.auth.getSession();
+    const session = data?.session;
     const focusp = localStorage.getItem('selectedProductId');
     const quantityInput = document.getElementById('qty');
     const quantity = parseInt(quantityInput.value, 10);
 
-    if (!token) {
+    if (!session) {
       toast.error('Please log in to add products to your cart', { autoClose: true });
       return;
     }
 
     try {
-      const response = await api.post('/api/cart/addToCart/', {
-        token_key: token,
+      const response = await api.post('/cart/items/', {
         product_id: focusp,
         quantity: quantity,
       });

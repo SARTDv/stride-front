@@ -11,10 +11,10 @@ const Cart = () => {
             const token_key = localStorage.getItem('token');
 
             try {
-                const response = await api.post('/api/cart/Showcart/', 
+                const response = await api.post('/cart/', 
                     { token_key: token_key }
                 );
-                setCartItems(response.data);
+                setCartItems(response.data.items);
             } catch (error) {
                 console.error('Error fetching cart items:', error);
             }
@@ -24,21 +24,23 @@ const Cart = () => {
     }, []);
 
     const Remove = async (productId) => {
-    
         try {
-            const response = await api.post('/api/cart/Remove/', {
-                product_id: productId,
+            const response = await api.delete('/cart/items/', {
+                data: {
+                    product_id: productId,
+                }
             });
-    
-            if (response.data.success) {
-                setCartItems(prevItems => prevItems.filter(item => item.product.id !== productId));
-                toast.success('Succesfully Removed!', { autoClose: true });
+
+            if (response.data.exito) {
+                setCartItems(prevItems => prevItems.filter(item => item.product_id !== productId));
+                toast.success('Successfully Removed!', { autoClose: true });
             } else {
-                toast.error("Error deleting !",{autoclose:true})
+                toast.error("Error deleting!", { autoClose: true });
                 console.error("Error removing item from cart:", response.data.message);
             }
         } catch (error) {
             console.error("Error during remove request:", error);
+            toast.error("Failed to remove item!", { autoClose: true });
         }
     };
 
@@ -67,7 +69,7 @@ const Cart = () => {
         }
     };
 
-    const totalSum = cartItems.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
+    const totalSum = cartItems.reduce((acc, item) => acc + item.product_price * item.quantity, 0);
 
   return (
     <div className="cart-table-area section-padding-100">
@@ -91,15 +93,15 @@ const Cart = () => {
                                 </thead>
                                 <tbody>
                                     {cartItems.map(item => (
-                                        <tr key={item.id}>
+                                        <tr key={item.product_id}>
                                             <td className="cart_product_img">
-                                                <a href="#"><img src={item.product.imageurl} alt="Product"/></a>
+                                                <a href="#"><img src={item.product_image_url} alt="Product"/></a>
                                             </td>
                                             <td className="cart_product_desc">
-                                                <h5>{item.product.name}</h5>
+                                                <h5>{item.product_name}</h5>
                                             </td>
                                             <td className="price">
-                                                <span>${item.product.price}</span>
+                                                <span>${item.product_price}</span>
                                             </td>
                                             <td className="qty">
                                             <div className="qty-btn d-flex align-items-center">
@@ -120,7 +122,7 @@ const Cart = () => {
                                                     title="Remove all"
                                                     onClick={(e) => {
                                                         e.preventDefault();
-                                                        Remove(item.product.id); // Llama a la función remove pasando el id del producto
+                                                        Remove(item.product_id); // Llama a la función remove pasando el id del producto
                                                       }}
                                                     >
                                                     <img src="img/core-img/papelera.png" alt="Remove " />

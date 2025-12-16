@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { supabase } from '../api/supabaseClient'
 import { useNavigate } from 'react-router-dom';
 import Slider from 'react-slider';
 import { toast, ToastContainer } from 'react-toastify';
@@ -130,14 +131,15 @@ const Shop = () => {
     };
 
     const handleAddToCart = async (Id) => {
-        const token = localStorage.getItem('token');
-        if (!token) {
+        const { data } = await supabase.auth.getSession();
+        const session = data?.session;
+        if (!session) {
             toast.error('Please log in to add products to your cart', { autoClose: 3000 });
             return;
         }
         try {
-            await api.post('/api/cart/addToCart/',
-                { token_key: token, product_id: Id }
+            await api.post('/cart/items/',
+                { product_id: Id }
             );
 
             toast.success('Successfully added!', { autoClose: 3000 });
