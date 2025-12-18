@@ -12,9 +12,10 @@ export function ProductsManager() {
 
   useEffect(() => {
     // Obtener productos al cargar el componente
-    api.get('/api/products/admin/products/')
+    api.get('/admin/products/getall/')
       .then(response => {
-        setProducts(response.data);
+        console.log("Fetched products:", response.data);
+        setProducts(response.data.products);
       })
       .catch(error => {
         console.error("There was an error fetching the products!", error);
@@ -24,9 +25,9 @@ export function ProductsManager() {
   const handleSaveProduct = (product) => {
     if (editingProduct) {
       // Actualizar el producto
-      api.put(`/api/products/admin/products/${product.id}/`, product)
+      api.put(`/admin/products/edit/${product.id}/`, product)
         .then(response => {
-          setProducts(products.map(p => p.id === product.id ? response.data : p));
+          setProducts(products.map(p => p.id === product.id ? product: p));
           setShowForm(false);
           setEditingProduct(null);
         })
@@ -35,14 +36,18 @@ export function ProductsManager() {
         });
     } else {
       // Crear un nuevo producto
-      api.post('/api/products/admin/products/', product)
+      api.post('/admin/products/add/', product)
         .then(response => {
-          setProducts([...products, response.data]);
+          console.log("Created product:", response.data.datos);
+          setProducts([...products, product]);
+
           setShowForm(false);
         })
         .catch(error => {
           console.error("There was an error creating the product!", error);
+          setProducts(products.filter(p => p.id !== product.id));
         });
+
     }
   };
 
@@ -53,7 +58,7 @@ export function ProductsManager() {
   };
 
   const handleDelete = (productId) => {
-    api.delete(`/api/products/admin/products/${productId}/`)
+    api.delete(`/admin/products/delete/${productId}/`)
       .then(() => {
         setProducts(products.filter(p => p.id !== productId));
       })
@@ -66,7 +71,7 @@ export function ProductsManager() {
     <div className={styles["products-manager"]}>
       <div className={styles["header-actions"]}>
         <h2>Product Management</h2>
-        <button 
+        <button
           className={`${styles.btn} ${styles["btn-primary"]}`}
           onClick={() => {
             setEditingProduct(null);
@@ -78,7 +83,7 @@ export function ProductsManager() {
       </div>
 
       {showForm ? (
-        <ProductForm 
+        <ProductForm
           product={editingProduct}
           onSave={handleSaveProduct}
           onCancel={() => {
@@ -87,7 +92,7 @@ export function ProductsManager() {
           }}
         />
       ) : (
-        <ProductList 
+        <ProductList
           products={products}
           onEdit={handleEdit}
           onDelete={handleDelete}

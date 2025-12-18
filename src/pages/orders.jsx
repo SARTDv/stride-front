@@ -13,7 +13,7 @@ const OrderPage = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await api.get('/example');
+        const response = await api.get('/order/list/');
         setOrders(response.data);
       } catch (err) {
         setError(err.response ? err.response.data.detail : 'Failed to fetch orders');
@@ -25,10 +25,10 @@ const OrderPage = () => {
     fetchOrders();
   }, []);
 
-  // Marcar como entregada
-  const handleMarkAsDelivered = async (orderId) => {
+  // Marcar como completada
+  const handleMarkAsCompleted = async (orderId) => {
     try {
-      await api.patch(`/api/orders/orders/${orderId}/`, {
+      await api.patch(`/order/update/${orderId}/`, {
         status: 'completed',
       });
 
@@ -47,7 +47,7 @@ const OrderPage = () => {
 
   const handleMarkAsCanceled = async (orderId) => {
     try {
-      await api.patch(`/api/orders/orders/${orderId}/`, {
+      await api.patch(`/order/update/${orderId}/`, {
         status: 'cancelled',
       });
       // Actualiza el estado local de la orden
@@ -88,7 +88,7 @@ const OrderPage = () => {
               <div className={styles["order-content"]}>
                 <div className={styles["order-image-container"]}>
                   <img
-                    src={order.FirstProductImageUrl}
+                    src="https://previews.123rf.com/images/robuart/robuart1603/robuart160300435/54338852-packing-product-icon-design-style-boxes-icon-logo-box-delivery-package-service-transportation.jpg"
                     alt=""
                     className={styles["order-image"]}
                   />
@@ -97,14 +97,14 @@ const OrderPage = () => {
                 <div className={styles["order-details"]}>
                   <div className={styles["order-title"]}>
                     <h3 className={styles["order-name"]}>
-                      Order Date: {new Date(order.orderDate).toLocaleDateString()}
+                      Order Date: {new Date(order.created_at).toLocaleDateString()}
                     </h3>
                   </div>
 
                   <div className={styles["order-info"]}>
                     <div className={styles["order-date"]}>
                       <Package size={18} />
-                      <span>Package quantity: {order.packageQty}</span>
+                      <span>Package quantity: 1 </span>
                     </div>
 
                     <div className={styles["order-status"]}>
@@ -124,14 +124,14 @@ const OrderPage = () => {
                   <div className={styles["order-actions"]}>
                     <div>
                       <span className={styles["order-price"]}>
-                        Total amount: ${order.Totalprice}
+                        Total amount: ${order.total_price}
                       </span>
                     </div>
                     <div className={styles["right-divs"]}>
-                      {order.status === 'shipped' && (
+                      {order.status === 'paid' && (
                         <>
                           <button
-                            onClick={() => handleMarkAsDelivered(order.id)}
+                            onClick={() => handleMarkAsCompleted(order.id)}
                             className={styles["mark-received-btn"]}
                           >
                             <CheckCircle size={18} />
@@ -148,6 +148,7 @@ const OrderPage = () => {
                         </>
                       )}
                     </div>
+                    {order.status === 'pending' && (<div className={styles["pending-note"]}>Your order is pending. Please complete the payment go to checkout</div>)}
                   </div>
                 </div>
               </div>

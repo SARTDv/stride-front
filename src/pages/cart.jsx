@@ -48,20 +48,20 @@ const Cart = () => {
         try {
             // Verificar si hay órdenes pendientes
             const checkResponse = await api.get(
-                "/api/orders/check-pending/"
+                "/order/check-pending/"
             );
     
             if (checkResponse.data.has_pending) {
                 toast.warning("order pending payment. Complete or cancel your order before creating a new one.");
                 return; // Salir si hay una orden pendiente
             }
-    
+            console.log("No pending orders, proceeding to create a new order.");
             // Crear una nueva orden
             const createResponse = await api.post(
-                "/api/orders/create/"
+                "/order/create/"
             );
     
-            toast.success("Orden creada exitosamente: " + createResponse.data.message);
+            toast.success( createResponse.data.message + " Redirecting to checkout... ");
             navigate("/checkout");
         } catch (error) {
             console.error("Error creando la orden:", error.response ? error.response.data : error);

@@ -6,6 +6,7 @@ import { supabase } from '../api/supabaseClient';
 import { useAtom } from 'jotai';
 import { userAtom, isLoggedInAtom } from '../state/authAtoms';
 
+
 function AccountPage() {
   const [user, setUser] = useAtom(userAtom);
   const [, setIsLoggedIn] = useAtom(isLoggedInAtom);
@@ -50,9 +51,23 @@ function AccountPage() {
 
         // Aquí puedes verificar si es admin usando una tabla en Supabase o roles
         // Por ahora, asumiremos que es false
-        setIsSuperuser(false);
+        const { data: roleData, error } = await supabase
+          .from('roles')
+          .select('role')
+          .eq('id', user.id)
+          .single();
 
-        console.log("User data:", { username, email: user.email });
+        if (error) {
+          console.error('Error obteniendo rol:', error);
+          setIsSuperuser(false);
+        } else {
+          const isAdmin = roleData?.role === 'admin';
+          console.log('Es admin:', isAdmin);
+          setIsSuperuser(isAdmin);
+        }
+        
+
+
       } catch (error) {
         console.error("Error fetching user data:", error);
         navigate("/login");

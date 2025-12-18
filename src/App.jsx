@@ -11,7 +11,6 @@ import Shop from './pages/shop';
 import ProductDetails from './pages/productDetails';
 import StrideLogin from './pages/strideLogin';
 import OrderPage from './pages/orders';
-import EmailVerification from './pages/EmailVerification';
 import AuthListener from './components/AuthToken';
 import { isLoggedInAtom } from './state/authAtoms';
 import Admin from './pages/admin/admin'
@@ -41,7 +40,6 @@ const AppContent = () => {
                     <Route path="/home" element={<Home key={isLoggedIn} />} />
                     <Route path="/shop" element={<Shop />} />
                     <Route path="/productDetails" element={<ProductDetails />} />
-                    <Route path="/verify-email" element={<EmailVerification />} />
 
                     <Route
                         path="/myAccount"

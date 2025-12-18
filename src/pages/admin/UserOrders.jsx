@@ -11,11 +11,7 @@ export function UserOrders() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await api.get('/api/orders/users_orders/', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}` // Token de autenticación
-          }
-        });
+        const response = await api.get('/order/list/');
         setOrders(response.data);
       } catch (error) {
         console.error('Error fetching orders:', error);
@@ -80,9 +76,9 @@ export function UserOrders() {
                           <h4>Order Items</h4>
                           {order.order_items.length > 0 ? (
                             order.order_items.map(item => (
-                            <p key={item.product}>
-                              {item.quantity} x {item.product_name} 
-                            </p>
+                              <p key={item.product}>
+                                {item.quantity} x {item.product_name}
+                              </p>
                             ))
                           ) : (
                             <p>No items in this order.</p>

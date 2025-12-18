@@ -17,13 +17,7 @@ const Checkout = () => {
   });
 
   const [shipInfo, setShipInfo] = useState({
-    first_name: "",
-    last_name: "",
     address: "",
-    town: "",
-    zip_code: "",
-    phone_num: "",
-    com: "",
   });
 
   const handleInputChange = (e) => {
@@ -39,25 +33,28 @@ const Checkout = () => {
   const handlePayment = async () => {
     // Verificación de campos requeridos
     const requiredPaymentFields = ["cardNumber", "expiryDate", "cvv"];
-    const requiredShippingFields = ["first_name", "last_name", "address", "zip_code"];
-  
+    const requiredShippingFields = ["address"];
+
     const isPaymentValid = requiredPaymentFields.every((field) => paymentInfo[field].trim() !== "");
     const isShippingValid = requiredShippingFields.every((field) => shipInfo[field].trim() !== "");
-  
+
     if (!isPaymentValid) {
       toast.error("Please complete all required payment fields.");
       return;
     }
-    
+
     if (!isShippingValid) {
       toast.error("Please complete all required shipping fields.");
       return;
-    }    
-    
+    }
+
     try {
       const response = await api.post(
-        "/api/orders/process-payment/",
-        { ship_info: shipInfo }
+        // aqui llamar a paymentservice
+        "/payment/process-payment/",
+        { ship_info: shipInfo,
+          paymentInfo: paymentInfo
+         }
       );
       toast.success(response.data.message);
       navigate('/cart');
@@ -66,31 +63,32 @@ const Checkout = () => {
       toast.error("Error processing payment: " + (error.response?.data.error || error.message));
     }
   };
-  
 
-  useEffect(() => {
-    const checkPendingOrders = async () => {
-      try {
-        const response = await api.get('/api/orders/check-pending/');
+
+useEffect(() => {
+  const checkPendingOrders = async () => {
+    try {
+      const response = await api.get('/order/check-pending/');
+      
+      if (response.data.has_pending) {
         setHasPendingOrders(response.data.has_pending);
-
-        if (response.data.has_pending) {
-          setPendingOrder(response.data.order); // Guarda la orden en el estado
-        } else {
-          toast.info("You have no pending orders to pay for.");
-          navigate('/cart');
-        }
-      } catch (error) {
-        console.error('Error checking pending orders:', error);
-        toast.error('Error checking orders.');
-        navigate('/cart'); // Redirigir al carrito en caso de error
-      } finally {
-        setLoading(false); // Termina el estado de carga
+        setPendingOrder(response.data.order);
+        setLoading(false);
+      } else {
+        setLoading(false);
+        toast.info("You have no pending orders to pay for.");
+        navigate('/cart');
       }
-    };
+    } catch (error) {
+      console.error('Error checking pending orders:', error);
+      setLoading(false);
+      toast.error('Error checking orders.');
+      navigate('/cart');
+    }
+  };
 
-    checkPendingOrders();
-  }, []);
+  checkPendingOrders();
+}, [navigate]);
 
   if (!hasPendingOrders || loading) {
     return null;
@@ -104,6 +102,7 @@ const Checkout = () => {
             <div className="checkout_details_area mt-50 clearfix">
               <div className="cart-title">
                 <h2>Checkout</h2>
+                <p>Please complete all required fields to proceed.</p>
               </div>
               <form>
                 <div className="row">
@@ -116,24 +115,11 @@ const Checkout = () => {
                   <div className="col-md-6 mb-3">
                     <input type="number" className="form-control" placeholder="CVV" name="cvv" value={paymentInfo.cvv} onChange={handleInputChange} required />
                   </div>
-                  <div className="col-md-6 mb-3">
-                    <input type="text" className="form-control" name="first_name" value={shipInfo.first_name} placeholder="First Name" onChange={handleShipChange} required />
-                  </div>
-                  <div className="col-md-6 mb-3">
-                    <input type="text" className="form-control" name="last_name" value={shipInfo.last_name} placeholder="Last Name" onChange={handleShipChange} required />
-                  </div>
+
                   <div className="col-12 mb-3">
                     <input type="text" className="form-control" name="address" placeholder="Address" value={shipInfo.address} onChange={handleShipChange} required />
                   </div>
-                  <div className="col-12 mb-3">
-                    <input type="text" className="form-control" name="town" placeholder="Town" value={shipInfo.town} onChange={handleShipChange} />
-                  </div>
-                  <div className="col-md-6 mb-3">
-                    <input type="text" className="form-control" name="zip_code" placeholder="Zip Code" value={shipInfo.zip_code} onChange={handleShipChange} required />
-                  </div>
-                  <div className="col-md-6 mb-3">
-                    <input type="number" className="form-control" name="phone_num" min="0" placeholder="Phone No" value={shipInfo.phone_num} onChange={handleShipChange} />
-                  </div>
+
                   <div className="col-12 mb-3">
                     <textarea name="com" value={shipInfo.com} className="form-control w-100" cols="30" rows="10" placeholder="Leave a comment about your order" onChange={handleShipChange}></textarea>
                   </div>
@@ -148,7 +134,7 @@ const Checkout = () => {
                 {pendingOrder.order_items.map((item) => (
                   <li key={item.id} style={{ display: "flex", justifyContent: "space-between" }}>
                     <span>{item.quantity}x {item.product_name}</span>
-                    <span>${(item.quantity * item.product_price).toFixed(2)}</span>
+                    <span>${(item.quantity * item.price).toFixed(2)}</span>
                   </li>
                 ))}
               </ul>
