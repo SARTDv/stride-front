@@ -61,13 +61,9 @@ export function UserOrders() {
                       <td colSpan="5">
                         <div className={styles["details-container"]}>
                           <h4>Shipping Information</h4>
-                          {order.ship_info ? (
+                          {order.shipping_address ? (
                             <>
-                              <p><strong>Name:</strong> {order.ship_info.first_name} {order.ship_info.last_name}</p>
-                              <p><strong>Address:</strong> {order.ship_info.address}, {order.ship_info.town}</p>
-                              <p><strong>ZIP Code:</strong> {order.ship_info.zip_code}</p>
-                              <p><strong>Phone:</strong> {order.ship_info.phone_num}</p>
-                              <p><strong>Comments:</strong> {order.ship_info.com || 'None'}</p>
+                              <p><strong>Address:</strong> {order.shipping_address}</p>
                             </>
                           ) : (
                             <p>No shipping information available.</p>
