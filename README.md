@@ -8,16 +8,16 @@ Stride es una plataforma de e-commerce desarrollada con **React** y **Vite** que
 - 🛒 Catálogo de productos con búsqueda y filtros
 - 👤 Sistema de autenticación y gestión de usuarios
 - 📦 Carrito de compras y checkout
-- 📊 Panel administrativo con análisis y gestión de productos
+- 📊 Panel administrativo con gestión de productos
 - 📱 Interfaz responsive con Bootstrap
-- ⚡ Hot Module Replacement (HMR) con Vite
+- 📧 sistema de notificacion con correos 
 
 ---
 
 ## Requisitos Previos
 
 - **Node.js** (v18+)
-- **pnpm** (gestor de paquetes recomendado)
+- **npm** (gestor de paquetes recomendado)
 - Navegador web moderno
 
 ---
@@ -32,7 +32,7 @@ cd stride-front
 
 2. Instala las dependencias:
 ```bash
-pnpm install
+npm install
 ```
 
 ---
